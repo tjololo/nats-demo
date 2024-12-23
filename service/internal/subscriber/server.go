@@ -15,7 +15,7 @@ type ClientConfig struct {
 	NatsSubscription string
 }
 
-func SubscriberOnly(config ClientConfig) {
+func Subscriber(config ClientConfig) {
 	nc, err := nats.Connect(config.NatsServerURL)
 	if err != nil {
 		log.Fatalf("Failed to connect to nats server %s\n", err)

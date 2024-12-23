@@ -35,7 +35,7 @@ to quickly create a Cobra application.`,
 			NatsServerURL: natsURL,
 			NatsSubscription: sub,
 		}
-		subscriber.SubscriberOnly(config)
+		subscriber.Subscriber(config)
 	},
 }
 

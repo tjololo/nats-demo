@@ -79,6 +79,20 @@ func Publisher(config PublisherConfig) {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
+	running := true
+	if config.Every != 0 {
+		log.Printf("Publishing message every %s\n", config.Every)
+		go func() {
+			for running {
+				time.Sleep(config.Every)
+				err = nc.Publish(config.DefaultSubject, []byte("Automatic message published at " + time.Now().Format("2006-12-13 15:04:05")))
+				if err != nil {
+					log.Printf("Failed to publish message %s\n", err)
+				}
+			}
+			log.Println("Stopped publishing messages")
+		}()
+	}
 
 	// Wait for interrupt signal to gracefully shutdown the server with
 	// a timeout of 5 seconds.
@@ -89,16 +103,17 @@ func Publisher(config PublisherConfig) {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	timeout := config.Every + 5*time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
+	running = false
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}
-	// catching ctx.Done(). timeout of 5 seconds.
+	// catching ctxTimeout.Done(). timeout of 5 seconds.
 	select {
 	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
+		log.Printf("Stopped after wating for %s timeout\n", timeout)
 	}
 	log.Println("Server exiting")
 }
