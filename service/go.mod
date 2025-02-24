@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/nats-io/nats.go v1.38.0
+	github.com/nats-io/nats.go v1.39.1
 	github.com/spf13/cobra v1.8.1
 )
 
